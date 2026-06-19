@@ -17,7 +17,8 @@ def extract_details_with_ai(text, columns):
     """OpenAI API के जरिए विशिष्ट डेटा निकालने का फंक्शन"""
     prompt = f"""
     Analyze the following document text and extract data for these columns: {', '.join(columns)}.
-    Return the output strictly as a JSON array of objects. If a value is missing, use null.
+    Return the output strictly as a JSON object with a main key named "data", which contains a list of objects.
+Example format: {"data": [{"Name": "John", "Phone": "1234"}]} If a value is missing, use null.
     
     Text:
     {text}

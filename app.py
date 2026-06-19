@@ -20,9 +20,14 @@ if uploaded_file and columns_input:
                 raw_data = extract_details_with_ai(text, columns_list)
                 
                 # JSON को DataFrame में बदलना
-                key = list(raw_data.keys())[0]
-                data = raw_data[key] if isinstance(raw_data[key], list) else [raw_data]
-                df = pd.DataFrame(data)
+                # JSON को DataFrame में बदलना
+if "data" in raw_data:
+    data = raw_data["data"]
+else:
+    key = list(raw_data.keys())[0] if raw_data.keys() else None
+    data = raw_data[key] if key and isinstance(raw_data[key], list) else [raw_data]
+
+df = pd.DataFrame(data)
                 
                 st.subheader("Results")
                 st.dataframe(df)

@@ -3,122 +3,148 @@ import pandas as pd
 import io
 from extractor import extract_text_from_file, detect_columns_with_ai, extract_details_with_ai
 
-# Page Config with modern layout
-st.set_page_config(page_title="DataExtract AI", page_icon="⚡", layout="centered")
+# Page Configuration
+st.set_page_config(page_title="DataExtract AI", page_icon="✨", layout="centered")
 
-# Custom CSS for Modern SaaS UI Look
+# Smooth & Aesthetic Custom CSS (Very friendly for eyes)
 st.markdown("""
     <style>
-    /* Global Styles */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
     
-    html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
+    /* Font family global override */
+    html, body, [class*="css"], .stMarkdown {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
     
-    /* Main Title Styling */
-    .main-title {
-        font-size: 2.8rem;
+    /* Smooth Background & App Layout padding */
+    .main .block-container {
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+        max-width: 700px;
+    }
+    
+    /* Modern minimalist header */
+    .hero-title {
+        font-size: 2.5rem;
         font-weight: 700;
-        letter-spacing: -0.03em;
-        background: linear-gradient(90deg, #ff4b4b 0%, #ff8585 100%);
+        letter-spacing: -0.04em;
+        background: linear-gradient(135deg, #3a86ff 0%, #8338ec 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.2rem;
     }
     
-    .subtitle {
-        color: #808495;
-        font-size: 1.1rem;
-        margin-bottom: 2.5rem;
+    .hero-subtitle {
+        color: #64748b;
+        font-size: 1rem;
+        font-weight: 400;
+        margin-bottom: 2rem;
     }
     
-    /* Elegant Cards / Container Boxes */
-    div[data-testid="stForm"], .stMarkdown div {
-        border-radius: 16px;
-    }
-    
-    /* Modern Input Styling */
-    .stTextInput col {
-        border-radius: 10px;
-    }
-    
-    /* Primary Buttons Styling */
-    div.stButton > button:first-child {
-        background: linear-gradient(135deg, #ff4b4b 0%, #e63946 100%);
-        color: white;
-        border: none;
-        padding: 0.6rem 2rem;
-        border-radius: 12px;
-        font-weight: 600;
-        letter-spacing: -0.01em;
-        box-shadow: 0 4px 14px rgba(255, 75, 75, 0.3);
+    /* File Uploader Container Box styling */
+    section[data-testid="stFileUploadDropzone"] {
+        border: 2px dashed #cbd5e1 !important;
+        border-radius: 16px !important;
+        background-color: rgba(248, 250, 252, 0.6) !important;
+        padding: 2rem !important;
         transition: all 0.3s ease;
-        width: 100%;
+    }
+    
+    section[data-testid="stFileUploadDropzone"]:hover {
+        border-color: #3a86ff !important;
+        background-color: rgba(241, 245, 249, 0.9) !important;
+    }
+    
+    /* Premium Multi-select Tags customized styling */
+    span[data-baseweb="tag"] {
+        background-color: #e2e8f0 !important;
+        color: #334155 !important;
+        border-radius: 8px !important;
+        padding: 4px 10px !important;
+        font-weight: 500 !important;
+    }
+    
+    /* Extract Button - Clean Soft Indigo Gradient */
+    div.stButton > button:first-child {
+        background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%) !important;
+        color: white !important;
+        border: none !important;
+        padding: 0.7rem 2rem !important;
+        border-radius: 12px !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        letter-spacing: -0.01em !important;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2) !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        width: 100% !important;
+        margin-top: 10px;
     }
     
     div.stButton > button:first-child:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(255, 75, 75, 0.4);
-        background: linear-gradient(135deg, #ff5e5e 0%, #ff4b4b 100%);
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35) !important;
+        opacity: 0.95;
     }
     
-    /* Download Button (Secondary/Success) */
+    /* Download Button - Minimal Soft Emerald look */
     div[data-testid="stDownloadButton"] > button {
-        background-color: #2ec4b6 !important;
+        background: #10b981 !important;
         color: white !important;
         border: none !important;
-        padding: 0.6rem 2rem !important;
+        padding: 0.6rem 1.8rem !important;
         border-radius: 12px !important;
         font-weight: 600 !important;
-        box-shadow: 0 4px 14px rgba(46, 196, 182, 0.3) !important;
-        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
+        transition: all 0.2s ease !important;
     }
     
     div[data-testid="stDownloadButton"] > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 20px rgba(46, 196, 182, 0.4) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3) !important;
     }
     
-    /* File Uploader styling wrapper */
-    .uploadedFile {
-        border-radius: 12px;
+    /* Custom divider line */
+    .custom-hr {
+        margin: 2.5rem 0;
+        border: 0;
+        height: 1px;
+        background: linear-gradient(to right, rgba(0,0,0,0), rgba(226,232,240,1), rgba(0,0,0,0));
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Custom Header HTML for beautiful look
-st.markdown('<h1 class="main-title">⚡ DataExtract AI</h1>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">Instantly transform any document into a structured Excel sheet powered by Gemini 2.5</p>', unsafe_allow_html=True)
+# Aesthetic Header Area
+st.markdown('<h1 class="hero-title">✨ DataExtract AI</h1>', unsafe_allow_html=True)
+st.markdown('<p class="hero-subtitle">Convert any document into structured spreadsheets instantly.</p>', unsafe_allow_html=True)
 
-# File Uploader Container
-uploaded_file = st.file_uploader("Upload Document (PDF, CSV, XLSX, TXT)", type=["pdf", "csv", "xlsx", "txt"])
+# Elegant Document Uploader
+uploaded_file = st.file_uploader("", type=["pdf", "csv", "xlsx", "txt"])
 
 if uploaded_file:
     if "current_file" not in st.session_state or st.session_state.current_file != uploaded_file.name:
-        with st.spinner("✨ AI is analyzing document structure..."):
+        with st.spinner("Analyzing document mapping..."):
             try:
                 text = extract_text_from_file(uploaded_file)
                 st.session_state.file_text = text
                 st.session_state.detected_cols = detect_columns_with_ai(text)
                 st.session_state.current_file = uploaded_file.name
             except Exception as e:
-                st.error(f"Error reading file: {e}")
+                st.error(f"Error analyzing document: {e}")
                 st.session_state.detected_cols = []
 
     if st.session_state.detected_cols:
-        st.write("---")
-        # Multiselect Dropdown
+        st.markdown('<div class="custom-hr"></div>', unsafe_allow_html=True)
+        
+        # Dropdown selection
         selected_columns = st.multiselect(
-            "📋 Select headings/columns to extract:",
+            "Choose fields to extract:",
             options=st.session_state.detected_cols,
             default=st.session_state.detected_cols
         )
         
         if selected_columns:
-            st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
-            if st.button("🚀 Extract & Structured Data"):
-                with st.spinner("⏳ Compiling data into tables..."):
+            if st.button("Generate Clean Sheet"):
+                with st.spinner("Structuring your data..."):
                     try:
                         raw_data = extract_details_with_ai(st.session_state.file_text, selected_columns)
                         
@@ -129,28 +155,27 @@ if uploaded_file:
                             data = raw_data[key] if key and isinstance(raw_data[key], list) else [raw_data]
 
                         df = pd.DataFrame(data)
+                        df.index = df.index + 1  # 1-based indexing for neat look
                         
-                        # Fix: 0 se counting hata kar 1 se shuru karne ke liye
-                        df.index = df.index + 1
-                        
-                        st.write("---")
-                        st.subheader("🎯 Preview Results")
+                        st.markdown('<div class="custom-hr"></div>', unsafe_allow_html=True)
+                        st.subheader("📊 Extracted Dataset")
                         st.dataframe(df, use_container_width=True)
                         
+                        # Generate buffer
                         buffer = io.BytesIO()
                         with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
                             df.to_excel(writer, index=False)
                         
-                        st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+                        st.markdown("<div style='margin-top: 25px;'></div>", unsafe_allow_html=True)
                         st.download_button(
-                            label="📥 Download Excel Sheet",
+                            label="📥 Export to Excel",
                             data=buffer.getvalue(),
                             file_name="extracted_data.xlsx",
                             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                         )
                     except Exception as e:
-                        st.error(f"Error extracting data: {e}")
+                        st.error(f"Extraction Error: {e}")
         else:
-            st.warning("Please select at least one column to proceed.")
+            st.warning("Please select at least one field heading.")
     else:
-        st.warning("AI could not detect columns. Please upload a clearer document.")
+        st.warning("Could not automatically read any columns from this format.")

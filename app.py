@@ -1,12 +1,13 @@
 import streamlit as st
 import pandas as pd
 import io
-from extractor import extract_text_from_pdf, extract_details_with_ai
+from extractor import extract_text_from_file, extract_details_with_ai
 
-st.set_page_config(page_title="AI Data Extractor", page_icon="📄")
+st.set_page_config(page_title="AI Multi-Data Extractor", page_icon="📄")
 st.title("📄 Smart Document Data Extractor")
 
-uploaded_file = st.file_uploader("Upload PDF/Document", type=["pdf"])
+# Ab yahan multiple file formats allowed hain
+uploaded_file = st.file_uploader("Upload Document (PDF, CSV, XLSX, TXT)", type=["pdf", "csv", "xlsx", "txt"])
 columns_input = st.text_input("Enter columns (comma-separated)", placeholder="Name, Phone, Email")
 
 if uploaded_file and columns_input:
@@ -15,7 +16,8 @@ if uploaded_file and columns_input:
     if st.button("Extract Data"):
         with st.spinner("Processing..."):
             try:
-                text = extract_text_from_pdf(uploaded_file)
+                # Sahi function call ho raha hai jo har tarah ki file handle karega
+                text = extract_text_from_file(uploaded_file)
                 raw_data = extract_details_with_ai(text, columns_list)
                 
                 if "data" in raw_data:

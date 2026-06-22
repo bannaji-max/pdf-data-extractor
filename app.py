@@ -15,11 +15,9 @@ if uploaded_file and columns_input:
     if st.button("Extract Data"):
         with st.spinner("Processing..."):
             try:
-                # Backend फंक्शन्स को कॉल करना
                 text = extract_text_from_pdf(uploaded_file)
                 raw_data = extract_details_with_ai(text, columns_list)
                 
-                # JSON को DataFrame में बदलना (यह अब सही ढंग से try ब्लॉक के अंदर है)
                 if "data" in raw_data:
                     data = raw_data["data"]
                 else:
@@ -31,7 +29,6 @@ if uploaded_file and columns_input:
                 st.subheader("Results")
                 st.dataframe(df)
                 
-                # Excel Buffer बनाना
                 buffer = io.BytesIO()
                 with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
                     df.to_excel(writer, index=False)

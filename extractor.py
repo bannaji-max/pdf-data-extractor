@@ -1,21 +1,23 @@
 import pdfplumber
-from openai import OpenAI
+from google import genai
+from google.genai import types
 import json
 import os
 from dotenv import load_dotenv
 
-# .env फाइल से API Key लोड करने के लिए
+# .env file se API Key load karne ke liye
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# Gemini Client setup (Yeh automatically GEMINI_API_KEY environment variable check karega)
+client = genai.Client()
 
 def extract_text_from_pdf(pdf_file):
-    """PDF से टेक्स्ट निकालने का फंक्शन"""
+    """PDF se text nikalne ka function"""
     with pdfplumber.open(pdf_file) as pdf:
         return "".join([page.extract_text() or "" for page in pdf.pages])
 
 def extract_details_with_ai(text, columns):
-    """OpenAI API के जरिए विशिष्ट डेटा निकालने का फंक्शन"""
-    # Sabhi curly braces ko double {{ }} kar diya hai taaki f-string error na de
+    """Gemini API ke zariye structured data nikalne ka function"""
     prompt = f"""
     Analyze the following document text and extract data for these columns: {', '.join(columns)}.
     Return the output strictly as a JSON object with a main key named "data", which contains a list of objects.
@@ -24,9 +26,14 @@ def extract_details_with_ai(text, columns):
     Text:
     {text}
     """
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        response_format={"type": "json_object"},
-        messages=[{"role": "user", "content": prompt}]
+    
+    # Gemini 2.5 Flash model ka use kar rahe hain jo fast aur free tier me available hai
+    response = client.models.generate_content(
+        model='gemini-2.5-flash',
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            response_mime_type="application/json",
+        ),
     )
-    return json.loads(response.choices[0].message.content)
+    
+    return json.loads(response.text)

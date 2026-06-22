@@ -43,7 +43,7 @@ if uploaded_file:
                             data = raw_data[key] if key and isinstance(raw_data[key], list) else [raw_data]
 
                         df = pd.DataFrame(data)
-                        
+                        df.index = df.index + 1
                         st.subheader("Results")
                         st.dataframe(df)
                         

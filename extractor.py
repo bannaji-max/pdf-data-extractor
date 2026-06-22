@@ -7,34 +7,25 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
-# Gemini Client setup
 client = genai.Client()
 
 def extract_text_from_file(file_file):
-    """Alag-alag files (PDF, CSV, Excel, TXT) se text nikalne ka function"""
     file_name = file_file.name.lower()
-    
     if file_name.endswith('.pdf'):
         with pdfplumber.open(file_file) as pdf:
             return "".join([page.extract_text() or "" for page in pdf.pages])
-            
     elif file_name.endswith('.csv'):
         df = pd.read_csv(file_file)
         return df.to_string()
-        
     elif file_name.endswith('.xlsx'):
         df = pd.read_excel(file_file)
         return df.to_string()
-        
     elif file_name.endswith('.txt'):
         return file_file.read().decode("utf-8")
-        
     else:
         raise ValueError("Unsupported file format!")
 
 def detect_columns_with_ai(text):
-    """Document text ko analyze karke possible columns/headings dhoodhne ka function"""
     prompt = f"""
     Analyze the following document text and identify all the possible column names, headers, or fields available in it.
     Return the output strictly as a JSON object with a single key named "detected_columns", which contains a list of strings (the column names).
@@ -54,7 +45,6 @@ def detect_columns_with_ai(text):
     return result.get("detected_columns", [])
 
 def extract_details_with_ai(text, columns):
-    """Gemini API ke zariye selected columns ka data nikalne ka function"""
     prompt = f"""
     Analyze the following document text and extract data for these columns: {', '.join(columns)}.
     Return the output strictly as a JSON object with a main key named "data", which contains a list of objects.
